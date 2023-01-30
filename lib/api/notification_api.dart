@@ -1,61 +1,69 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart';
+import 'package:timezone/data/latest.dart';
 
-class NotificationApi {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  final AndroidInitializationSettings _androidInitializationSettings =
-      AndroidInitializationSettings('logo');
+class LocalNotificationService {
+  LocalNotificationService();
 
-  void initialiseNotifications() async {
-    InitializationSettings initializationSettings = InitializationSettings(
-      android: _androidInitializationSettings,
-      // iOS: IOSNotificationDetails
+  final _localNotificationService = FlutterLocalNotificationsPlugin();
+
+  // this part of the code contains the notification settings for android and ios
+
+  Future<void> initialize() async {
+    const AndroidInitializationSettings androidInitializationSettings =
+        AndroidInitializationSettings('@drawable/ic_stat_access_time.png');
+
+    const IOSInitializationSettings iosInitializationSettings =
+        IOSInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      // onDidReceiveLocalNotification: onDidReceiveLocalNotification,
     );
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    final InitializationSettings settings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings,
+    );
+
+    await _localNotificationService.initialize(settings,
+        onSelectNotification: onSelectNotification);
   }
 
-  void sendNotification(String title, String body) async {
-    AndroidNotificationDetails androidNotificationDetails =
+  // this part of the code contain the information about the notification details
+
+  Future<NotificationDetails> _notificationDetails() async {
+    const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
       'channelId',
       'channelName',
+      channelDescription: 'description',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.max,
+      playSound: true,
     );
-    NotificationDetails notificationDetails = NotificationDetails(
+    const IOSNotificationDetails iosNotificationDetails =
+        IOSNotificationDetails();
+    return NotificationDetails(
       android: androidNotificationDetails,
-    );
-    await _flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      notificationDetails,
+      iOS: iosNotificationDetails,
     );
   }
 
-  // schedual notification functions
+  // this field is for show notification
 
-  void scheualNotification(String title, String body) async {
-    AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      'channelId',
-      'channelName',
-    );
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-    );
-
-    await _flutterLocalNotificationsPlugin.periodicallyShow(
-      0,
-      title,
-      body,
-      RepeatInterval.everyMinute,
-      notificationDetails,
-    );
+  Future<void> showNotification(
+      {required int id, required String title, required String body}) async {
+    final details = await _notificationDetails();
+    await _localNotificationService.show(id, title, body, details);
   }
 
-// canceling all the notifications
-  void stopNotifications() async {
-    _flutterLocalNotificationsPlugin.cancelAll();
+  void onDidReceiveLocalNotification(
+      int id, String? title, String? body, String? payload) {
+    print('id $id');
+  }
+
+  void onSelectNotification(String? payload) {
+    print('payload $payload');
   }
 }
