@@ -9,6 +9,7 @@ class NotificationApi {
   void initialiseNotifications() async {
     InitializationSettings initializationSettings = InitializationSettings(
       android: _androidInitializationSettings,
+      // iOS: IOSNotificationDetails
     );
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
@@ -30,5 +31,31 @@ class NotificationApi {
       body,
       notificationDetails,
     );
+  }
+
+  // schedual notification functions
+
+  void scheualNotification(String title, String body) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'channelId',
+      'channelName',
+    );
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+
+    await _flutterLocalNotificationsPlugin.periodicallyShow(
+      0,
+      title,
+      body,
+      RepeatInterval.everyMinute,
+      notificationDetails,
+    );
+  }
+
+// canceling all the notifications
+  void stopNotifications() async {
+    _flutterLocalNotificationsPlugin.cancelAll();
   }
 }

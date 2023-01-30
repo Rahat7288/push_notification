@@ -68,7 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    notificationApi.scheualNotification(
+                        'shedual notification', 'body');
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
@@ -80,7 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    notificationApi.stopNotifications();
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: const [
