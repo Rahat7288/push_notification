@@ -32,12 +32,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  NotificationApi notificationApi = NotificationApi();
+  LocalNotificationService notificationApi = LocalNotificationService();
 
   @override
   void initState() {
+    notificationApi.initialize();
     super.initState();
-    notificationApi.initialiseNotifications();
   }
 
   @override
